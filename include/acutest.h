@@ -161,6 +161,41 @@
     } while(0)
 #endif  /* #ifdef __cplusplus */
 
+#if !defined(NDEBUG)
+
+#include <setjmp.h>
+#include <signal.h>
+#include <stdio.h>
+#include <assert.h>
+jmp_buf assert_env_;
+int test_asserted_ = 0;
+
+void test_on_sigabrt_(int signum)
+{
+    // signal(signum, SIG_DFL);
+    test_asserted_ = 1;
+    longjmp(assert_env_, 1);
+}
+
+#define EXPECT_ASSERT(code)                                                        \
+    do                                                                             \
+    {                                                                              \
+        extern int test_asserted_;                                                 \
+        extern jmp_buf assert_env;                                                 \
+        test_asserted_ = 0;                                                        \
+                                                                                   \
+        if (setjmp(assert_env_) == 0)                                              \
+        {                                                                          \
+            __sighandler_t test_old_handler_ = signal(SIGABRT, &test_on_sigabrt_); \
+            code;                                                                  \
+            signal(SIGABRT, test_old_handler_);                                    \
+        }                                                                          \
+        TEST_CHECK_(test_asserted_, "Code expected to assert() did not assert.");  \
+    } while (0)
+#else
+#define EXPECT_ASSERT(code) \
+    TEST_MSG("EXPECT_ASSERT() is no-op because NDEBUG macro is defined.")
+#endif
 
 /* Sometimes it is useful to split execution of more complex unit tests to some
  * smaller parts and associate those parts with some names.

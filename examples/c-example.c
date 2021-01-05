@@ -43,6 +43,20 @@ test_fail(void)
 }
 
 static void
+expect_assert(void)
+{
+    /* An assert is expected to happen. */
+    EXPECT_ASSERT({
+        TEST_CHECK(1 == 1);
+
+        assert(0);
+
+        /* This code is never executed if assert()-s are anabled. */
+        TEST_CHECK(1 + 2 == 2 + 1);
+    });
+}
+
+static void
 helper(void)
 {
     /* Kill the current test with a condition which is never true. */
@@ -75,6 +89,7 @@ test_crash(void)
 TEST_LIST = {
     { "tutorial", test_tutorial },
     { "fail",     test_fail },
+    { "expected_assert", expect_assert},
     { "abort",    test_abort },
     { "crash",    test_crash },
     { NULL, NULL }
