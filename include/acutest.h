@@ -84,6 +84,27 @@
 #define TEST_CHECK_(cond,...)   acutest_check_((cond), __FILE__, __LINE__, __VA_ARGS__)
 #define TEST_CHECK(cond)        acutest_check_((cond), __FILE__, __LINE__, "%s", #cond)
 
+/* Macros for testing whether two values are equal or not. These macros
+ * can be used arbitrarily in functions implementing the unit tests.
+ *
+ * If any condition fails throughout execution of a test, the test fails.
+ *
+ * TEST_EQ and TEST_NE take two numbers as arguments. The macros
+ * return non-zero (condition passes) or 0 (condition fails).
+ *
+ * That can be useful when more conditions should be checked only if some
+ * preceding condition passes, as illustrated in this code snippet:
+ *
+ *   SomeStruct* ptr = allocate_some_struct();
+ *   if(TEST_NE(ptr, NULL)) {
+ *       TEST_EQ(ptr->member1, 100);
+ *       TEST_CHECK(ptr->member2 > 200);
+ *   }
+ */
+#define TEST_EQ(a, b) acutest_check_(((a) == (b)), __FILE__, __LINE__, \
+                                     "%s is not equal %s, %g != %g", #a, #b, (double)(a), (double)(b))
+#define TEST_NE(a, b) acutest_check_(((a) != (b)), __FILE__, __LINE__, \
+                                     "%s is equal %s, %g == %g", #a, #b, (double)(a), (double)(b))
 
 /* These macros are the same as TEST_CHECK_ and TEST_CHECK except that if the
  * condition fails, the currently executed unit test is immediately aborted.
