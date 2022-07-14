@@ -167,10 +167,10 @@
 #include <signal.h>
 #include <stdio.h>
 #include <assert.h>
-jmp_buf assert_env_;
-int test_asserted_ = 0;
+static jmp_buf assert_env_;
+static int test_asserted_ = 0;
 
-void test_on_sigabrt_(int signum)
+static void test_on_sigabrt_(int signum)
 {
     // signal(signum, SIG_DFL);
     test_asserted_ = 1;
