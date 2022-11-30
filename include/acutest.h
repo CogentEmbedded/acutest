@@ -191,9 +191,11 @@
 static jmp_buf assert_env_;
 static int test_asserted_ = 0;
 
+__attribute__((unused))
 static void test_on_sigabrt_(int signum)
 {
     // signal(signum, SIG_DFL);
+    (void)signum;
     test_asserted_ = 1;
     longjmp(assert_env_, 1);
 }
