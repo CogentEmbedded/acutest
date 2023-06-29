@@ -204,7 +204,7 @@ static void test_on_sigabrt_(int signum)
     do                                                                             \
     {                                                                              \
         extern int test_asserted_;                                                 \
-        extern jmp_buf assert_env;                                                 \
+        extern jmp_buf assert_env_;                                                \
         test_asserted_ = 0;                                                        \
                                                                                    \
         if (setjmp(assert_env_) == 0)                                              \
@@ -213,7 +213,7 @@ static void test_on_sigabrt_(int signum)
             code;                                                                  \
             signal(SIGABRT, test_old_handler_);                                    \
         }                                                                          \
-        TEST_CHECK_(test_asserted_, "Code expected to assert() did not assert.");  \
+        TEST_CHECK_(test_asserted_, "Code expected to assert() asserted.");        \
     } while (0)
 #else
 #define EXPECT_ASSERT(code) \
